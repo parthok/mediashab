@@ -8,6 +8,7 @@ package mediaplayer.gui.controller;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
@@ -37,7 +38,7 @@ import mediaplayer.dal.SongDAO;
  * @author a
  */
 public class mainController implements Initializable {
-    
+
     //DBConnect test = new DBConnect();
     @FXML private Label nowPlayingLabel;
     @FXML private ListView<Playlist> playlistView;
@@ -45,10 +46,10 @@ public class mainController implements Initializable {
     @FXML private TextField TextFieldFilter;
     @FXML private Button button;
     @FXML private MediaView MediaView;
-    
+
     private Media media;
     private MediaPlayer mediaPlayer;
-    
+
     @FXML
     private void openNewSong(ActionEvent event) throws IOException{
         final FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/mediaplayer/gui/view/newSong.fxml"));
@@ -64,7 +65,8 @@ public class mainController implements Initializable {
         final NewSongController fxmlLoaderController = fxmlLoader.<NewSongController>getController();
 
         final Song newSong = fxmlLoaderController.getNewSong();
-        songView.getItems().add(newSong);
+        if(newSong != null)
+            songView.getItems().add(newSong);
 
     }
 
@@ -83,18 +85,17 @@ public class mainController implements Initializable {
         final DeleteSongController fxmlLoaderController = fxmlLoader.<DeleteSongController>getController();
 
         int index =0;
-
-        for (Song song:
-        songView.getItems()) {
-            if(song.getTitle().equalsIgnoreCase(fxmlLoaderController.getSongTitle())){
-                songView.getItems().remove(index);
+        final Iterator<Song> iterator = songView.getItems().iterator();
+        while (iterator.hasNext()){
+            Song song = iterator.next();
+            if(song.getTitle() != null && song.getTitle().equalsIgnoreCase(fxmlLoaderController.getSongTitle())){
+                iterator.remove();
             }
             index++;
-
         }
 
     }
-    
+
     @FXML
     private void openNewPlaylist(ActionEvent event) throws IOException{
         Parent root = FXMLLoader.load(getClass().getResource("/mediaplayer/gui/view/newPlaylist.fxml"));
@@ -103,18 +104,18 @@ public class mainController implements Initializable {
         stage.setScene(scene);
         stage.show();
     }
-    
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-    }    
+    }
 
     @FXML
     private void handleButtonAction(ActionEvent event) throws IOException {
         //test.getItemsFromList();
         nowPlayingLabel.setText("You're Not Playing a Song :)");
     }
-    
+
     @FXML
     private void testCreateSong(ActionEvent event) {
         //SongDAO test = new SongDAO();
